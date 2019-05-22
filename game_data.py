@@ -117,14 +117,18 @@ def extract_game_data(game):
     else:
         short_name = game.name
 
+    # Assume a game takes 4 hours if not specified
+    max_playtime = max(game.min_playing_time, game.max_playing_time) or 240
+    min_playtime = game.min_playing_time or 240
+
     return {
         'id': game.id,
         'name': short_name,
         'full_name': game.name,
         'min_players': min_players,
         'max_players': max_players,
-        'min_playtime': game.min_playing_time,
-        'max_playtime': game.max_playing_time,
+        'min_playtime': min_playtime,
+        'max_playtime': max_playtime,
         'player_count_popularity': popularity,
     }
 
