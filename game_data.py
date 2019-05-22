@@ -8,6 +8,24 @@ import requests
 
 FAMILY_URL = 'https://api.geekdo.com/xmlapi2/family?id=19&type=boardgamefamily'
 
+REMOVE_IDS = {
+    127229, # 1830 Card game
+    277030, # 1824 Duplicate
+    16000, # 1825 Unit 2
+    15999, # 1825 Unit 3
+    31013, # 1830 Lummerland ???
+    183308, # 1844/54 Duplicate
+    11284, # 1862, not the Hutton one, people probably won't mean this
+    162067, # 18C2C duplicate
+    183212, # 18Dixie duplicate
+    165740, # 18OE duplicate
+}
+
+ADD_IDS = {
+    219717, # 18USA
+    277759, # 1822MRS
+}
+
 
 def retrieve_18xx_family_xml(args):
     """Download the 18XX family api response, inlcuding links to games
@@ -119,7 +137,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     raw = retrieve_18xx_family_xml(args)
-    possible_game_ids = entries_from_raw_family_xml(raw)
+    possible_game_ids = set(entries_from_raw_family_xml(raw)) - REMOVE_IDS
+    possible_game_ids = list(possible_game_ids | ADD_IDS)
     possible_games = BGGClient().game_list(possible_game_ids)
     games = games_only(possible_games)
     dicts = [extract_game_data(g) for g in games]
