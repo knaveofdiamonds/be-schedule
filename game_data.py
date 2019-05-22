@@ -1,5 +1,6 @@
 import argparse
 import json
+import re
 from xml.etree import ElementTree
 
 from boardgamegeek import BGGClient
@@ -25,6 +26,8 @@ ADD_IDS = {
     219717, # 18USA
     277759, # 1822MRS
 }
+
+SHORT_NAME_PATTERN = re.compile('\A18[a-zA-Z0-9]+')
 
 
 def retrieve_18xx_family_xml(args):
@@ -107,9 +110,17 @@ def extract_game_data(game):
     popularity = build_popularity_dict(game)
     min_players, max_players = determine_player_count(game, popularity)
 
+    short_name_match = SHORT_NAME_PATTERN.match(game.name)
+
+    if short_name_match:
+        short_name = short_name_match.group()
+    else:
+        short_name = game.name
+
     return {
         'id': game.id,
-        'name': game.name,
+        'name': short_name,
+        'full_name': game.name,
         'min_players': min_players,
         'max_players': max_players,
         'min_playtime': game.min_playing_time,
