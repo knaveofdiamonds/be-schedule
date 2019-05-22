@@ -27,6 +27,12 @@ def entries_from_raw_family_xml(xml_str):
     ]
 
 
+def games_only(possible_games):
+    """Remove expansions/accessories and return actual games"""
+
+    return [g for g in possible_games if not (g.accessory or g.expansion)]
+
+
 if __name__ == '__main__':
     raw = retrieve_18xx_family_xml()
 
