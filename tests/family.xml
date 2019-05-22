@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items termsofuse="https://boardgamegeek.com/xmlapi/termsofuse">
+  <item type="boardgamefamily" id="19">
+    <thumbnail>https://cf.geekdo-images.com/thumb/img/1X-ud6kvT5mHqRazx9Qne5Pvcn0=/fit-in/200x150/pic612582.jpg</thumbnail>
+    <image>https://cf.geekdo-images.com/original/img/hYFTQ6AnYXEIa9v3RfX6MXbw9Kg=/0x0/pic612582.jpg</image>
+    <name type="primary" sortindex="1" value="18xx" />
+    <description>Bunch of bgg description text</description>
+    <link type="boardgamefamily" id="114139" value="1761: From Canal to Rail" inbound="true"/>
+    <link type="boardgamefamily" id="17132" value="1800" inbound="true"/>
+    <link type="boardgamefamily" id="63170" value="1817" inbound="true"/>
+    <link type="boardgamefamily" id="123" value="Spurious" inbound="false"/>
+  </item>
+</items>
