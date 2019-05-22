@@ -1,4 +1,3 @@
-from collections import namedtuple
 from xml.etree import ElementTree
 
 import requests
