@@ -112,6 +112,8 @@ if __name__ == '__main__':
     parser.add_argument(
         'output',
         metavar='FILE',
+        default='games.json',
+        nargs='?',
         help='Output location for JSON game data.',
     )
     args = parser.parse_args()
