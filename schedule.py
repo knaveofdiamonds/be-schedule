@@ -50,6 +50,12 @@ class Schedule:
         self._add_uniqueness_constraints()
 
     def solve(self):
+        """Returns a solution, if one exists, for the scheduling problem.
+
+        The result is a list of dicts - each dict is the result for a session,
+        containing a mapping from game name -> set of players.
+
+        """
         self.p.solve()
 
         if pulp.LpStatus[self.p.status] != 'Optimal':
