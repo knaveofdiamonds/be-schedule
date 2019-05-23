@@ -3,11 +3,11 @@ from collections import defaultdict
 import pulp
 import pytest
 
-from schedule import Schedule, owned_games
+from schedule import GameDatabase, Schedule, owned_games
 
 @pytest.fixture
 def games():
-    return {
+    return GameDatabase({
         '1817': {
             'name': '1817',
             'min_players': 3,
@@ -18,7 +18,7 @@ def games():
             'min_players': 3,
             'max_players': 6,
         },
-    }
+    })
 
 
 def test_owned_games():

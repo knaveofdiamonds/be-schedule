@@ -3,6 +3,29 @@ import json
 
 import pulp
 
+
+class GameDatabase:
+    def __init__(self, games):
+        self.games = games
+
+    @classmethod
+    def from_file(cls, path):
+        with open(path) as f:
+            return cls({g['name']: g for g in json.load(f)})
+
+    def min_players(self, game):
+        try:
+            return self.games[game]['min_players']
+        except KeyError:
+            return 3
+
+    def max_players(self, game):
+        try:
+            return self.games[game]['max_players']
+        except KeyError:
+            return 4
+
+
 class Schedule:
     def __init__(self, games_db, players, sessions, table_limit=10):
         self.games_db = games_db
@@ -142,13 +165,15 @@ class Schedule:
                     game_players.append(self.choices[i][k][j])
 
 
+                # The minimum for a game, or 0 if not being played
+                disjoint_minimum = self.games_db.min_players(game) * self.games_played[i][j]
                 self.p += (
-                    pulp.lpSum(game_players) >= self._min_players(game) * self.games_played[i][j],
+                    pulp.lpSum(game_players) >= disjoint_minimum,
                     f"Game min players {i} {j}"
                 )
 
                 self.p += (
-                    pulp.lpSum(game_players) <= self._max_players(game),
+                    pulp.lpSum(game_players) <= self.games_db.max_players(game),
                     f"Game max players {i} {j}"
                 )
 
@@ -163,12 +188,6 @@ class Schedule:
                     variables.append(self.choices[k][i][j])
 
                 self.p += pulp.lpSum(variables) <= 1, f"Play once {i} {j}"
-
-    def _min_players(self, game):
-        return self.games_db[game]['min_players']
-
-    def _max_players(self, game):
-        return self.games_db[game]['max_players']
 
     def weight(self, player, game):
         if game in player['interests']:
@@ -190,8 +209,7 @@ if __name__ == '__main__':
     with open('sample.json') as f:
         players = json.load(f)
 
-    with open('games.json') as f:
-        games = {g['name']: g for g in json.load(f)}
+    games = GameDatabase.from_file('games.json')
 
     s = Schedule(games, players, [0,1,2,3])
     result = s.solve()
