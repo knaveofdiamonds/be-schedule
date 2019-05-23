@@ -60,3 +60,19 @@ def test_more_players_than_max_player_count(games):
 
     assert len(result[0]['1817']) == 4
     assert len(result[0]['1830']) == 3
+
+
+def test_players_do_not_play_the_same_game_in_multiple_sessions(games):
+    players = [
+        {'name': 'Alice', 'owns': [], 'interests': ['1817']},
+        {'name': 'Bob', 'owns': ['1817'], 'interests': ['1817', '1849']},
+        {'name': 'Charles', 'owns': ['1830'], 'interests': ['1830']},
+    ]
+
+    result = Schedule(games, players, [0, 1]).solve()
+
+    assert len(result) == 2
+    assert {**result[0], **result[1]} == {
+        '1817': {'Alice', 'Bob', 'Charles'},
+        '1830': {'Alice', 'Bob', 'Charles'},
+    }

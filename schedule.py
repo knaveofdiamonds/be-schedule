@@ -141,7 +141,16 @@ class Schedule:
                 )
 
     def _add_uniqueness_constraints(self):
-        pass
+        """Make sure that players do not play games no more than once"""
+
+        for i, _ in enumerate(self.players):
+            for j, _ in enumerate(self.games):
+                variables = []
+
+                for k, _ in enumerate(self.sessions):
+                    variables.append(self.choices[k][i][j])
+
+                self.p += pulp.lpSum(variables) <= 1, f"Play once {i} {j}"
 
     def _min_players(self, game):
         return self.games_db[game]['min_players']
