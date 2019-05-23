@@ -4,10 +4,11 @@ import json
 import pulp
 
 class Schedule:
-    def __init__(self, games_db, players, sessions):
+    def __init__(self, games_db, players, sessions, table_limit=10):
         self.games_db = games_db
         self.players = players
         self.sessions = sessions
+        self.table_limit = table_limit
 
         self.games = list(owned_games(self.players))
 
@@ -74,6 +75,8 @@ class Schedule:
         n players, but _only_ if the game is being played at all (if it isn't
         being played, 0 players is valid)!
 
+        They also support the table limit constraints
+
         """
         return pulp.LpVariable.dicts(
             'G',
@@ -104,8 +107,12 @@ class Schedule:
         self.p += pulp.lpSum(objective)
 
     def _add_logical_play_constraints(self):
-        # Players can only play one game per-session. Equally a player can only
-        # play in a game if it is being played at all.
+        """Enforce logical constraints.
+
+        * Players can only play one game per-session.
+        * A player can only play in a game if it is being played at all.
+        * Do not break the table limit
+        """
         for i, _ in enumerate(self.sessions):
             for j, _ in enumerate(self.players):
                 self.p += (
@@ -118,6 +125,11 @@ class Schedule:
                         self.choices[i][j][k] <= self.games_played[i][k],
                         f"Game being played {i} {j} {k}",
                     )
+
+            self.p += (
+                pulp.lpSum(self.games_played[i].values()) <= self.table_limit,
+                f"Table limit session {i}",
+            )
 
     def _add_player_count_constraints(self):
         """Games have a minimum and maximum player count"""
