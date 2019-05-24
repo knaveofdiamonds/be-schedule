@@ -7,6 +7,12 @@ import pulp
 class GameDatabase:
     def __init__(self, games):
         self.games = games
+        self.default = {
+            'min_players': 3,
+            'max_players': 4,
+            'min_playtime': 240,
+            'max_playtime': 240,
+        }
 
     @classmethod
     def from_file(cls, path):
@@ -14,16 +20,22 @@ class GameDatabase:
             return cls({g['name']: g for g in json.load(f)})
 
     def min_players(self, game):
-        try:
-            return self.games[game]['min_players']
-        except KeyError:
-            return 3
+        return self._game(game)['min_players']
 
     def max_players(self, game):
-        try:
-            return self.games[game]['max_players']
-        except KeyError:
-            return 4
+        return self._game(game)['max_players']
+
+    def min_playtime(self, game):
+        return self._game(game)['min_playtime']
+
+    def max_playtime(self, game):
+        return self._game(game)['max_playtime']
+
+    def _game(self, game):
+        if game in self.games:
+            return self.games[game]
+        else:
+            return self.default
 
 
 class Schedule:
