@@ -1,5 +1,6 @@
 from collections import defaultdict
 import json
+import math
 
 import pulp
 
@@ -22,8 +23,31 @@ class GameDatabase:
     def min_players(self, game):
         return self._game(game)['min_players']
 
-    def max_players(self, game):
-        return self._game(game)['max_players']
+    def max_players(self, game, session=None):
+        g = self._game(game)
+
+        if (
+                session is None or
+                g['min_players'] == g['max_players'] or
+                g['min_playtime'] == g['max_playtime']
+        ):
+            return g['max_players']
+
+        # playtime = a + b * number_of_players_beyond_minimum
+        #
+        # so:
+        #
+        # (playtime - a) / b = number_of_players_beyond_minimum
+        a = g['min_playtime']
+        b = (
+            (g['max_playtime'] - g['min_playtime']) /
+            (g['max_players'] - g['min_players'])
+        )
+
+        return min(
+            g['max_players'],
+            g['min_players'] + math.floor((session['length'] - a) / b),
+        )
 
     def min_playtime(self, game):
         return self._game(game)['min_playtime']
@@ -214,7 +238,7 @@ class Schedule:
     def _add_player_count_constraints(self):
         """Games have a minimum and maximum player count"""
 
-        for i in self.session_ids:
+        for i, session in enumerate(self.sessions):
             for j in self.session_games[i]:
                 game = self.all_games[j]
                 game_players = []
@@ -230,7 +254,7 @@ class Schedule:
                 )
 
                 self.p += (
-                    pulp.lpSum(game_players) <= self.games_db.max_players(game),
+                    pulp.lpSum(game_players) <= self.games_db.max_players(game, session),
                     f"Game max players {i} {j}"
                 )
 

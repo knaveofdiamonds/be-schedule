@@ -139,3 +139,18 @@ def test_short_sessions_restrict_games_with_static_playtimes(games):
     assert result == [
         {'1860':  {'Alice', 'Bob', 'Charles', 'Dick'}},
     ]
+
+
+def test_short_sessions_restrict_games_with_dynamic_playtimes(games):
+    players = [
+        {'name': 'Alice', 'owns': ['1817'], 'interests': ['1817']},
+        {'name': 'Bob', 'owns': ['1860'], 'interests': ['1817']},
+        {'name': 'Charles', 'owns': ['1830'], 'interests': ['1817', '1830']},
+        {'name': 'Dick', 'owns': [], 'interests': ['1817', '1830']},
+        {'name': 'Eric', 'owns': [], 'interests': ['1817', '1830']},
+        {'name': 'Fred', 'owns': [], 'interests': ['1817', '1830']},
+    ]
+
+    result = Schedule(games, players, [session(length=240)]).solve()
+
+    assert set(result[0].keys()) == {'1830', '1860'}
