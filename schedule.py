@@ -297,7 +297,7 @@ if __name__ == '__main__':
 
     sessions = [
         {'name': 'Friday Eve', 'length': 300},
-        {'name': 'Saturday', 'length': 600},
+        {'name': 'Saturday', 'length': 720},
         {'name': 'Saturday Eve', 'length': 300},
         {'name': 'Sunday', 'length': 420},
     ]
@@ -306,7 +306,7 @@ if __name__ == '__main__':
     result = s.solve()
 
     for i, session in enumerate(result):
-        print(f"==== Session {i} ====")
+        print(f"==== Session {sessions[i]['name']} ====")
 
         for game in session:
             print(f"## {game} ##")
