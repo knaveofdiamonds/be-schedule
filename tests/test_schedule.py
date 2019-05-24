@@ -12,13 +12,28 @@ def games():
             'name': '1817',
             'min_players': 3,
             'max_players': 6,
+            'min_playtime': 360,
+            'max_playtime': 540,
         },
         '1830': {
             'name': '1830',
             'min_players': 3,
             'max_players': 6,
+            'min_playtime': 180,
+            'max_playtime': 360,
+        },
+        '1860': {
+            'name': '1860',
+            'min_players': 3,
+            'max_players': 4,
+            'min_playtime': 240,
+            'max_playtime': 240,
         },
     })
+
+
+def session(**kwargs):
+    return {'length': 600, **kwargs}
 
 
 def test_owned_games():
@@ -40,7 +55,7 @@ def test_single_session_2_games_3_players(games):
         {'name': 'Charles', 'owns': ['1830'], 'interests': ['1830']},
     ]
 
-    result = Schedule(games, players, [0]).solve()
+    result = Schedule(games, players, [session()]).solve()
 
     assert result == [{'1817': {'Alice', 'Bob', 'Charles'}}]
 
@@ -56,7 +71,7 @@ def test_more_players_than_max_player_count(games):
         {'name': 'Georgie', 'owns': ['1830'], 'interests': ['1817']},
     ]
 
-    result = Schedule(games, players, [0]).solve()
+    result = Schedule(games, players, [session()]).solve()
 
     assert len(result[0]['1817']) == 4
     assert len(result[0]['1830']) == 3
@@ -69,7 +84,7 @@ def test_players_do_not_play_the_same_game_in_multiple_sessions(games):
         {'name': 'Charles', 'owns': ['1830'], 'interests': ['1830']},
     ]
 
-    result = Schedule(games, players, [0, 1]).solve()
+    result = Schedule(games, players, [session(), session()]).solve()
 
     assert len(result) == 2
     assert {**result[0], **result[1]} == {
@@ -88,7 +103,7 @@ def test_table_limit(games):
         {'name': 'Fred', 'owns': [], 'interests': ['1830']},
     ]
 
-    result = Schedule(games, players, [0], 1).solve()
+    result = Schedule(games, players, [session()], 1).solve()
 
     assert len(result[0]) == 1
 
@@ -103,9 +118,24 @@ def test_not_all_players_attend_all_sessions(games):
         {'name': 'Fred', 'owns': [], 'interests': [], 'sessions': [0]},
     ]
 
-    result = Schedule(games, players, [0, 1], 1).solve()
+    result = Schedule(games, players, [session(), session()], 1).solve()
 
     assert result == [
         {'1830':  {'Alice', 'Bob', 'Eric', 'Fred'}},
         {'1817':  {'Alice', 'Charles', 'Dick'}},
+    ]
+
+
+def test_short_sessions_restrict_games_with_static_playtimes(games):
+    players = [
+        {'name': 'Alice', 'owns': ['1817'], 'interests': ['1817']},
+        {'name': 'Bob', 'owns': ['1860'], 'interests': ['1817']},
+        {'name': 'Charles', 'owns': [], 'interests': ['1817']},
+        {'name': 'Dick', 'owns': [], 'interests': ['1817']},
+    ]
+
+    result = Schedule(games, players, [session(length=300)]).solve()
+
+    assert result == [
+        {'1860':  {'Alice', 'Bob', 'Charles', 'Dick'}},
     ]
