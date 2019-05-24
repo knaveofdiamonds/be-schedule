@@ -31,7 +31,7 @@ ADD_IDS = {
     277759, # 1822MRS
 }
 
-SHORT_NAME_PATTERN = re.compile('\A[123][0789][a-zA-Z0-9]+')
+SHORT_NAME_PATTERN = re.compile(r'\A[123][0789][a-zA-Z0-9]+')
 
 
 def retrieve_18xx_family_xml(args):
