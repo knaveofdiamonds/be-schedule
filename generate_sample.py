@@ -29,10 +29,12 @@ FAKES = [Faker(l) for l in LOCALES]
 
 
 def fake():
+    """Return a faker from a random locale"""
     return FAKES[np.random.choice(len(LOCALES))]
 
 
 def names(n=40):
+    """Return a set of first names."""
     name_set = set()
 
     while len(name_set) < n:
@@ -42,6 +44,7 @@ def names(n=40):
 
 
 def random_games(n, games_db, games_distribution):
+    """Draw random games from the games db, without replacement (i.e. unique choices)"""
     games = np.random.choice(
         games_db,
         size=n,
@@ -53,26 +56,40 @@ def random_games(n, games_db, games_distribution):
 
 
 def owned_games(games_db, games_distribution):
+    """Return games people own.
+
+    Weighted such that most people don't bring any games.
+    """
     n = np.random.choice(6, p=[0.5, 0.2, 0.1, 0.1, 0.05, 0.05])
 
     return random_games(n, games_db, games_distribution)
 
 
 def want_to_play(games_db, games_owned, games_distribution):
+    """Return games people want to play.
+
+    Assume that if you own/bring a game, you want to play it.
+    """
     n = np.random.choice(8)
     return list(set(games_owned + random_games(n, games_db, games_distribution)))
+
+
+def make_games_distribution(games_db):
+    """Return the probability distribution of owning / wanting to play a game
+
+    This is based on the proportion of 'owned' games on BGG.
+    """
+    total_owned = sum([g['owned'] for g in games_db])
+
+    return [g['owned'] / total_owned for g in games_db]
 
 
 if __name__ == '__main__':
     with open('games.json', 'r') as f:
         games_db = json.load(f)
 
-    # Only take the most owned to make the dataset a bit more realistic.
     games_db = sorted(games_db, key=lambda g: g['owned'], reverse=True)
-
-    total_owned = sum([g['owned'] for g in games_db])
-    games_distribution = [g['owned'] / total_owned for g in games_db]
-
+    games_distribution = make_games_distribution(games_db)
     people = names()
     result = []
 
