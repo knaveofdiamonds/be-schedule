@@ -140,7 +140,7 @@ def extract_game_data(game):
         'max_players': max_players,
         'min_playtime': min_playtime,
         'max_playtime': max_playtime,
-        'player_count_popularity': popularity,
+        'popularity': popularity,
         'owned': game.users_owned or 1,
     }
 

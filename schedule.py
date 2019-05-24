@@ -13,7 +13,13 @@ class GameDatabase:
             'max_players': 4,
             'min_playtime': 240,
             'max_playtime': 240,
+            'popularity': {
+                3: 0.9,
+                4: 0.9,
+            }
         }
+
+        self._preprocess_game_popularities()
 
     @classmethod
     def from_file(cls, path):
@@ -57,11 +63,35 @@ class GameDatabase:
 
         return max(g['max_playtime'], g['min_playtime'])
 
+    def popularity(self, game, n):
+        try:
+            return self._game[game][n]
+        except KeyError:
+            return 1.0
+
     def _game(self, game):
         if game in self.games:
             return self.games[game]
         else:
             return self.default
+
+    def _preprocess_game_popularities(self):
+        for g in self.games:
+            game = self.games[g]
+
+            popularity = {}
+
+            for i in range(game['min_players'], game['max_players'] + 1):
+                if 'popularity' in game and str(i) in game['popularity']:
+                    value = game['popularity'][str(i)]
+                else:
+                    value = 0.9
+
+                # Smooth popularity such that games with lots of popularity
+                # ratings don't effect the objective function
+                popularity[i] = min(value, 0.9)
+
+            game['popularity'] = popularity
 
 
 class Schedule:
