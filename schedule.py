@@ -53,7 +53,9 @@ class GameDatabase:
         return self._game(game)['min_playtime']
 
     def max_playtime(self, game):
-        return self._game(game)['max_playtime']
+        g = self._game(game)
+
+        return max(g['max_playtime'], g['min_playtime'])
 
     def _game(self, game):
         if game in self.games:
