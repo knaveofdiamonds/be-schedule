@@ -20,6 +20,10 @@ REMOVE_IDS = {
     162067, # 18C2C duplicate
     183212, # 18Dixie duplicate
     165740, # 18OE duplicate
+    31619, # 1834 Duplicate
+    6937, # 1829 Duplicate
+    13924, # 1829 Duplicate
+    212735, # 1893 Duplicate
 }
 
 ADD_IDS = {
@@ -27,7 +31,7 @@ ADD_IDS = {
     277759, # 1822MRS
 }
 
-SHORT_NAME_PATTERN = re.compile('\A18[a-zA-Z0-9]+')
+SHORT_NAME_PATTERN = re.compile('\A[123][0789][a-zA-Z0-9]+')
 
 
 def retrieve_18xx_family_xml(args):
@@ -59,7 +63,11 @@ def entries_from_raw_family_xml(xml_str):
 def games_only(possible_games):
     """Remove expansions/accessories and return actual games"""
 
-    return [g for g in possible_games if not (g.accessory or g.expansion)]
+    return [
+        g
+        for g in possible_games
+        if g.id in ADD_IDS or not (g.accessory or g.expansion)
+    ]
 
 
 def build_popularity_dict(game):
@@ -117,6 +125,9 @@ def extract_game_data(game):
     else:
         short_name = game.name
 
+    if game.id == 277759:
+        short_name = '1822MRS'
+
     # Assume a game takes 4 hours if not specified
     max_playtime = max(game.min_playing_time, game.max_playing_time) or 240
     min_playtime = game.min_playing_time or 240
@@ -153,11 +164,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     raw = retrieve_18xx_family_xml(args)
-    possible_game_ids = set(entries_from_raw_family_xml(raw)) - REMOVE_IDS
-    possible_game_ids = list(possible_game_ids | ADD_IDS)
+    possible_game_ids = list(set(entries_from_raw_family_xml(raw)) - REMOVE_IDS)
     possible_games = BGGClient().game_list(possible_game_ids)
     games = games_only(possible_games)
     dicts = [extract_game_data(g) for g in games]
 
     with open(args.output, 'w') as f:
-        json.dump(dicts, f, indent=2)
+        json.dump(sorted(dicts, key=lambda g: g['name']), f, indent=2)
