@@ -33,6 +33,8 @@ class Schedule:
         self.sessions = sessions
         self.table_limit = table_limit
 
+        self.session_ids = list(range(len(self.sessions)))
+        self.session_players = self._make_session_players()
         self.games = list(owned_games(self.players))
 
         self.p = pulp.LpProblem('Schedule', pulp.LpMaximize)
@@ -63,17 +65,33 @@ class Schedule:
 
         result = []
 
-        for i in self.choices:
+        for i in self.session_ids:
             sessions = defaultdict(set)
 
-            for j, player in enumerate(self.players):
+            for j in self.session_players[i]:
                 for k, game in enumerate(self.games):
                     if self.choices[i][j][k].varValue:
-                        sessions[game].add(player['name'])
+                        sessions[game].add(self.players[j]['name'])
 
             result.append(dict(sessions))
 
         return result
+
+    def _make_session_players(self):
+        for p in self.players:
+            if 'sessions' not in p:
+                p['sessions'] = self.session_ids
+
+        session_players = []
+
+        for i in self.session_ids:
+            session_players.append([])
+
+            for j, player in enumerate(self.players):
+                if i in player['sessions']:
+                    session_players[i].append(j)
+
+        return session_players
 
     def _make_choice_variables(self):
         """Returns a nested Dict containing binary decision variables X_i_j_k.
@@ -82,15 +100,18 @@ class Schedule:
         k: `1` if they are playing, `0` otherwise.
 
         """
-        return pulp.LpVariable.dicts(
-            'X',
-            (
-                range(len(self.sessions)),
-                range(len(self.players)),
-                range(len(self.games)),
-            ),
-            cat='Binary',
-        )
+        result = {}
+
+        for i in self.session_ids:
+            result[i] = {}
+
+            for j in self.session_players[i]:
+                result[i][j] = {}
+
+                for k in range(len(self.games)):
+                    result[i][j][k] = pulp.LpVariable(f'X_{i}_{j}_{k}', cat='Binary')
+
+        return result
 
     def _make_games_played_variables(self):
         """Returns a nested Dict containing binary decision variables G_i_j.
@@ -110,7 +131,7 @@ class Schedule:
         return pulp.LpVariable.dicts(
             'G',
             (
-                range(len(self.sessions)),
+                self.session_ids,
                 range(len(self.games)),
             ),
             cat='Binary',
@@ -126,11 +147,11 @@ class Schedule:
         """
         objective = []
 
-        for i, session in enumerate(self.sessions):
-            for j, player in enumerate(self.players):
+        for i in self.session_ids:
+            for j in self.session_players[i]:
                 for k, game in enumerate(self.games):
                     objective.append(
-                        self.choices[i][j][k] * self.weight(player, game)
+                        self.choices[i][j][k] * self.weight(self.players[j], game)
                     )
 
         self.p += pulp.lpSum(objective)
@@ -142,8 +163,8 @@ class Schedule:
         * A player can only play in a game if it is being played at all.
         * Do not break the table limit
         """
-        for i, _ in enumerate(self.sessions):
-            for j, _ in enumerate(self.players):
+        for i in self.session_ids:
+            for j in self.session_players[i]:
                 self.p += (
                     pulp.lpSum(self.choices[i][j].values()) == 1,
                     f"Game Per Session {i} {j}",
@@ -163,13 +184,12 @@ class Schedule:
     def _add_player_count_constraints(self):
         """Games have a minimum and maximum player count"""
 
-        for i, _ in enumerate(self.sessions):
+        for i in self.session_ids:
             for j, game in enumerate(self.games):
                 game_players = []
 
-                for k, _ in enumerate(self.players):
+                for k in self.session_players[i]:
                     game_players.append(self.choices[i][k][j])
-
 
                 # The minimum for a game, or 0 if not being played
                 disjoint_minimum = self.games_db.min_players(game) * self.games_played[i][j]
@@ -191,7 +211,8 @@ class Schedule:
                 variables = []
 
                 for k, _ in enumerate(self.sessions):
-                    variables.append(self.choices[k][i][j])
+                    if i in self.choices[k]:
+                        variables.append(self.choices[k][i][j])
 
                 self.p += pulp.lpSum(variables) <= 1, f"Play once {i} {j}"
 

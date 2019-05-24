@@ -74,6 +74,26 @@ def want_to_play(games_db, games_owned, games_distribution):
     return list(set(games_owned + random_games(n, games_db, games_distribution)))
 
 
+def sessions(n_max):
+    """Returns the sessions a person will be attending.
+
+    Most people will attend all sessions, others will attend a random
+    contiguous subset of sessions.
+
+    """
+    p = [0.3 / (n_max-1)] * (n_max - 1)
+    p.append(0.7)
+
+    n = np.random.choice(n_max, p=p) + 1
+
+    if n < n_max:
+        a = np.random.choice(n_max - n + 1)
+    else:
+        a = 0
+
+    return list(range(n_max))[a:(a+n)]
+
+
 def make_games_distribution(games_db):
     """Return the probability distribution of owning / wanting to play a game
 
@@ -95,15 +115,13 @@ if __name__ == '__main__':
 
     for person in people:
         games_owned = owned_games(games_db, games_distribution)
-        interests = want_to_play(games_db, games_owned, games_distribution)
 
-        result.append(
-            {
-                'name': person,
-                'owns': games_owned,
-                'interests': interests
-            }
-        )
+        result.append({
+            'name': person,
+            'owns': games_owned,
+            'interests': want_to_play(games_db, games_owned, games_distribution),
+            'sessions': sessions(4),
+        })
 
     with open('sample.json', 'w') as f:
         json.dump(result, f, indent=2)

@@ -91,3 +91,21 @@ def test_table_limit(games):
     result = Schedule(games, players, [0], 1).solve()
 
     assert len(result[0]) == 1
+
+
+def test_not_all_players_attend_all_sessions(games):
+    players = [
+        {'name': 'Alice', 'owns': ['1817'], 'interests': ['1817'], 'sessions': [0, 1]},
+        {'name': 'Bob', 'owns': [], 'interests': ['1817'], 'sessions': [0]},
+        {'name': 'Charles', 'owns': [], 'interests': ['1817'], 'sessions': [1]},
+        {'name': 'Dick', 'owns': [], 'interests': ['1817'], 'sessions': [1]},
+        {'name': 'Eric', 'owns': ['1830'], 'interests': [], 'sessions': [0]},
+        {'name': 'Fred', 'owns': [], 'interests': [], 'sessions': [0]},
+    ]
+
+    result = Schedule(games, players, [0, 1], 1).solve()
+
+    assert result == [
+        {'1830':  {'Alice', 'Bob', 'Eric', 'Fred'}},
+        {'1817':  {'Alice', 'Charles', 'Dick'}},
+    ]
