@@ -128,8 +128,8 @@ class Schedule:
     def solve(self):
         """Returns a solution, if one exists, for the scheduling problem.
 
-        The result is a list of dicts - each dict is the result for a session,
-        containing a mapping from game name -> set of players.
+        The result is: [[(game, [player, ...]), ...], ...] - i.e. each session
+        has a list of tuples, giving the game and the those playing.
 
         """
         self.p.solve()
@@ -159,6 +159,8 @@ class Schedule:
         return result
 
     def _make_session_players(self):
+        """Figure out who is available in each session"""
+
         for p in self.players:
             if 'sessions' not in p:
                 p['sessions'] = self.session_ids
@@ -175,6 +177,8 @@ class Schedule:
         return session_players
 
     def _make_session_games(self):
+        """Figure out what games are available each session"""
+
         session_games = []
 
         for i, session in enumerate(self.sessions):
@@ -311,7 +315,7 @@ class Schedule:
                 )
 
     def _add_uniqueness_constraints(self):
-        """Make sure that players do not play games no more than once"""
+        """Make sure that players do not play games more than once"""
 
         for i, _ in enumerate(self.players):
             unique_games = set(self.all_games)
@@ -350,6 +354,15 @@ if __name__ == '__main__':
     s = Schedule(games, players, sessions)
     result = s.solve()
 
+    total_plausible_interests = sum([
+        min(
+            len([g for g in p['interests'] if g in s.all_games]),
+            len(sessions)
+        )
+        for p in players
+    ])
+    satisfied_interests = 0
+
     for i, session in enumerate(result):
         print(f"==== Session {sessions[i]['name']} ====")
 
@@ -357,8 +370,15 @@ if __name__ == '__main__':
             print(f"## {game} ##")
 
             for player in players:
-                print(player['name'])
+                if game in player['interests']:
+                    print(f"{player['name']}*")
+                    satisfied_interests += 1
+                else:
+                    print(f"{player['name']}")
 
             print("")
 
         print("")
+
+    print(f"Satisfied {satisfied_interests} out of {total_plausible_interests}")
+    print(f"Objective function: {s.p.objective.value()}")
