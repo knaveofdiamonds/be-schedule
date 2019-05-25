@@ -239,11 +239,20 @@ class Schedule:
         """
         result = {}
 
-        for i in self.session_ids:
+        for i, session in enumerate(self.sessions):
             result[i] = {}
 
             for j in self.session_games[i]:
-                result[i][j] = pulp.LpVariable(f'G_{i}_{j}', cat='Binary')
+                game = self.all_games[j]
+                counts = range(
+                    self.games_db.min_players(game),
+                    self.games_db.max_players(game, session) + 1
+                )
+
+                result[i][j] = [
+                    pulp.LpVariable(f'G_{i}_{j}_{c}', cat='Binary')
+                    for c in counts
+                ]
 
         return result
 
@@ -284,12 +293,13 @@ class Schedule:
 
                 for k in self.session_games[i]:
                     self.p += (
-                        self.choices[i][j][k] <= self.games_played[i][k],
+                        self.choices[i][j][k] <= self.games_played[i][k][0],
                         f"Game being played session {i} player {j} game {k}",
                     )
 
+            games_played = [self.games_played[i][g][0] for g in self.games_played[i]]
             self.p += (
-                pulp.lpSum(self.games_played[i].values()) <= self.table_limit,
+                pulp.lpSum(games_played) <= self.table_limit,
                 f"Table limit session session {i}",
             )
 
@@ -305,7 +315,7 @@ class Schedule:
                     game_players.append(self.choices[i][k][j])
 
                 # The minimum for a game, or 0 if not being played
-                disjoint_minimum = self.games_db.min_players(game) * self.games_played[i][j]
+                disjoint_minimum = self.games_db.min_players(game) * self.games_played[i][j][0]
                 self.p += (
                     pulp.lpSum(game_players) >= disjoint_minimum,
                     f"Game min players session {i} game {j}"
