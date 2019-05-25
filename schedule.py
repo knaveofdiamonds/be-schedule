@@ -95,12 +95,15 @@ class GameDatabase:
 
 
 class Schedule:
-    def __init__(self, games_db, players, sessions, table_limit=10):
+    def __init__(self, games_db, players, sessions, shared_games=[], table_limit=10):
         self.games_db = games_db
         self.players = players
         self.sessions = sessions
         self.table_limit = table_limit
-        self.all_games = list(owned_games(self.players))
+        self.all_games = shared_games.copy()
+
+        for p in self.players:
+            self.all_games.extend(p['owns'])
 
         self.session_ids = list(range(len(self.sessions)))
         self.session_players = self._make_session_players()
@@ -299,12 +302,16 @@ class Schedule:
         """Make sure that players do not play games no more than once"""
 
         for i, _ in enumerate(self.players):
-            for j, _ in enumerate(self.all_games):
+            unique_games = set(self.all_games)
+
+            for game in unique_games:
+                indexes = [x for x, g in enumerate(self.all_games) if g == game]
                 variables = []
 
-                for k, _ in enumerate(self.sessions):
-                    if i in self.choices[k] and j in self.choices[k][i]:
-                        variables.append(self.choices[k][i][j])
+                for j in indexes:
+                    for k in self.session_ids:
+                        if i in self.choices[k] and j in self.choices[k][i]:
+                            variables.append(self.choices[k][i][j])
 
                 self.p += pulp.lpSum(variables) <= 1, f"Play once {i} {j}"
 
@@ -313,15 +320,6 @@ class Schedule:
             return 1.0
         else:
             return 0.0
-
-
-def owned_games(players):
-    result = set()
-
-    for p in players:
-        result |= set(p['owns'])
-
-    return result
 
 
 if __name__ == '__main__':

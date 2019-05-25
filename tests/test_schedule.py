@@ -1,9 +1,7 @@
-from collections import defaultdict
-
-import pulp
 import pytest
 
-from schedule import GameDatabase, Schedule, owned_games
+from schedule import GameDatabase, Schedule
+
 
 @pytest.fixture
 def games():
@@ -34,18 +32,6 @@ def games():
 
 def session(**kwargs):
     return {'length': 600, **kwargs}
-
-
-def test_owned_games():
-    players = [
-        {'name': 'Alice', 'owns': [], 'interests': ['1817']},
-        {'name': 'Bob', 'owns': ['1817'], 'interests': ['1817', '1849']},
-        {'name': 'Charles', 'owns': ['1830'], 'interests': ['1830']},
-    ]
-
-    result = owned_games(players)
-
-    assert result == {'1817', '1830'}
 
 
 def test_single_session_2_games_3_players(games):
@@ -104,7 +90,7 @@ def test_table_limit(games):
         {'name': 'Fred', 'owns': [], 'interests': ['1830']},
     ]
 
-    result = Schedule(games, players, [session()], 1).solve()
+    result = Schedule(games, players, [session()], table_limit=1).solve()
 
     assert len(result[0]) == 1
 
@@ -119,7 +105,7 @@ def test_not_all_players_attend_all_sessions(games):
         {'name': 'Fred', 'owns': [], 'interests': [], 'sessions': [0]},
     ]
 
-    result = Schedule(games, players, [session(), session()], 1).solve()
+    result = Schedule(games, players, [session(), session()]).solve()
 
     assert result == [
         [('1830', [players[0], players[1], players[4], players[5]])],
@@ -155,3 +141,19 @@ def test_short_sessions_restrict_games_with_dynamic_playtimes(games):
     result = Schedule(games, players, [session(length=240)]).solve()
 
     assert {x for x, _ in result[0]} == {'1830', '1860'}
+
+
+def test_multiple_copies_of_a_game(games):
+    players = [
+        {'name': 'Alice', 'owns': ['1830'], 'interests': ['1830']},
+        {'name': 'Bob', 'owns': ['1830'], 'interests': ['1830']},
+        {'name': 'Charles', 'owns': ['1830'], 'interests': []},
+        {'name': 'Dick', 'owns': [], 'interests': []},
+        {'name': 'Eric', 'owns': [], 'interests': []},
+        {'name': 'Fred', 'owns': [], 'interests': []},
+        {'name': 'Georgie', 'owns': [], 'interests': []},
+    ]
+
+    result = Schedule(games, players, [session()]).solve()
+
+    assert [x for x, _ in result[0]] == ['1830', '1830']
