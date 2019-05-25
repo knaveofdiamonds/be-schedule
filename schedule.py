@@ -1,5 +1,7 @@
+from argparse import ArgumentParser
 import json
 import math
+import sys
 
 import pulp
 
@@ -277,18 +279,18 @@ class Schedule:
             for j in self.session_players[i]:
                 self.p += (
                     pulp.lpSum(self.choices[i][j].values()) == 1,
-                    f"Game Per Session {i} {j}",
+                    f"Game Per Session session {i} player {j}",
                 )
 
                 for k in self.session_games[i]:
                     self.p += (
                         self.choices[i][j][k] <= self.games_played[i][k],
-                        f"Game being played {i} {j} {k}",
+                        f"Game being played session {i} player {j} game {k}",
                     )
 
             self.p += (
                 pulp.lpSum(self.games_played[i].values()) <= self.table_limit,
-                f"Table limit session {i}",
+                f"Table limit session session {i}",
             )
 
     def _add_player_count_constraints(self):
@@ -306,12 +308,12 @@ class Schedule:
                 disjoint_minimum = self.games_db.min_players(game) * self.games_played[i][j]
                 self.p += (
                     pulp.lpSum(game_players) >= disjoint_minimum,
-                    f"Game min players {i} {j}"
+                    f"Game min players session {i} game {j}"
                 )
 
                 self.p += (
                     pulp.lpSum(game_players) <= self.games_db.max_players(game, session),
-                    f"Game max players {i} {j}"
+                    f"Game max players session {i} game {j}"
                 )
 
     def _add_uniqueness_constraints(self):
@@ -339,6 +341,10 @@ class Schedule:
 
 
 if __name__ == '__main__':
+    parser = ArgumentParser()
+    parser.add_argument('--spec', action='store_true', help='Print out the problem specification')
+    args = parser.parse_args()
+
     with open('sample.json') as f:
         players = json.load(f)
 
@@ -352,6 +358,11 @@ if __name__ == '__main__':
     ]
 
     s = Schedule(games, players, sessions)
+
+    if args.spec:
+        print(s.p)
+        sys.exit(0)
+
     result = s.solve()
 
     total_plausible_interests = sum([
