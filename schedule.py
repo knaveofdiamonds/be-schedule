@@ -135,16 +135,21 @@ class Schedule:
         result = []
 
         for i in self.session_ids:
-            sessions = defaultdict(set)
+            result.append([])
 
-            for j in self.session_players[i]:
-                for k in self.session_games[i]:
-                    game = self.all_games[k]
+            for g in self.session_games[i]:
+                game = self.all_games[g]
 
-                    if self.choices[i][j][k].varValue:
-                        sessions[game].add(self.players[j]['name'])
+                players = [
+                    self.players[p]
+                    for p in self.session_players[i]
+                    if self.choices[i][p][g].varValue
+                ]
 
-            result.append(dict(sessions))
+                if players:
+                    result[i].append((game, players))
+
+            result[i] = sorted(result[i], key=lambda x: x[0])
 
         return result
 
@@ -338,11 +343,11 @@ if __name__ == '__main__':
     for i, session in enumerate(result):
         print(f"==== Session {sessions[i]['name']} ====")
 
-        for game in session:
+        for game, players in session:
             print(f"## {game} ##")
 
-            for player in session[game]:
-                print(player)
+            for player in players:
+                print(player['name'])
 
             print("")
 

@@ -57,7 +57,7 @@ def test_single_session_2_games_3_players(games):
 
     result = Schedule(games, players, [session()]).solve()
 
-    assert result == [{'1817': {'Alice', 'Bob', 'Charles'}}]
+    assert result == [[('1817', players)]]
 
 
 def test_more_players_than_max_player_count(games):
@@ -73,8 +73,10 @@ def test_more_players_than_max_player_count(games):
 
     result = Schedule(games, players, [session()]).solve()
 
-    assert len(result[0]['1817']) == 4
-    assert len(result[0]['1830']) == 3
+    print(result)
+
+    assert len(result[0][0][1]) == 4
+    assert len(result[0][1][1]) == 3
 
 
 def test_players_do_not_play_the_same_game_in_multiple_sessions(games):
@@ -85,12 +87,11 @@ def test_players_do_not_play_the_same_game_in_multiple_sessions(games):
     ]
 
     result = Schedule(games, players, [session(), session()]).solve()
+    result = result[0] + result[1]
 
     assert len(result) == 2
-    assert {**result[0], **result[1]} == {
-        '1817': {'Alice', 'Bob', 'Charles'},
-        '1830': {'Alice', 'Bob', 'Charles'},
-    }
+    assert ('1817', [players[0], players[1], players[2]]) in result
+    assert ('1830', [players[0], players[1], players[2]]) in result
 
 
 def test_table_limit(games):
@@ -121,8 +122,8 @@ def test_not_all_players_attend_all_sessions(games):
     result = Schedule(games, players, [session(), session()], 1).solve()
 
     assert result == [
-        {'1830':  {'Alice', 'Bob', 'Eric', 'Fred'}},
-        {'1817':  {'Alice', 'Charles', 'Dick'}},
+        [('1830', [players[0], players[1], players[4], players[5]])],
+        [('1817', [players[0], players[2], players[3]])],
     ]
 
 
@@ -137,7 +138,7 @@ def test_short_sessions_restrict_games_with_static_playtimes(games):
     result = Schedule(games, players, [session(length=300)]).solve()
 
     assert result == [
-        {'1860':  {'Alice', 'Bob', 'Charles', 'Dick'}},
+        [('1860', players)],
     ]
 
 
@@ -153,4 +154,4 @@ def test_short_sessions_restrict_games_with_dynamic_playtimes(games):
 
     result = Schedule(games, players, [session(length=240)]).solve()
 
-    assert set(result[0].keys()) == {'1830', '1860'}
+    assert {x for x, _ in result[0]} == {'1830', '1860'}
