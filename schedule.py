@@ -331,7 +331,10 @@ class Schedule:
                         if i in self.choices[k] and j in self.choices[k][i]:
                             variables.append(self.choices[k][i][j])
 
-                self.p += pulp.lpSum(variables) <= 1, f"Play once {i} {j}"
+                # We only need a constraint if there is more than one
+                # opportunity to play a game.
+                if len(variables) > 1:
+                    self.p += pulp.lpSum(variables) <= 1, f"Play once player {i} game {game}"
 
     def weight(self, player, game):
         if game in player['interests']:
