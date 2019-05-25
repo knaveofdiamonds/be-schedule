@@ -281,8 +281,8 @@ class Schedule:
         """Enforce logical constraints.
 
         * Players can only play one game per-session.
-        * A player can only play in a game if it is being played at all.
-        * Do not break the table limit
+        * A game must be played with n players to be played with n+1.
+        * Do not break the table limit.
         """
         for i in self.session_ids:
             for j in self.session_players[i]:
@@ -291,13 +291,18 @@ class Schedule:
                     f"Game Per Session session {i} player {j}",
                 )
 
-                for k in self.session_games[i]:
-                    self.p += (
-                        self.choices[i][j][k] <= self.games_played[i][k][0],
-                        f"Game being played session {i} player {j} game {k}",
-                    )
+            games_played = []
+            for g in self.games_played[i]:
+                previous_count = self.games_played[i][g][0]
+                games_played.append(previous_count)  # Store for the table count constraint
 
-            games_played = [self.games_played[i][g][0] for g in self.games_played[i]]
+                for c, count_var in enumerate(self.games_played[i][g][1:]):
+                    self.p += (
+                        previous_count >= count_var,
+                        f"Increasing player count {i} {g} {c}",
+                    )
+                    previous_count = count_var
+
             self.p += (
                 pulp.lpSum(games_played) <= self.table_limit,
                 f"Table limit session session {i}",
@@ -306,7 +311,7 @@ class Schedule:
     def _add_player_count_constraints(self):
         """Games have a minimum and maximum player count"""
 
-        for i, session in enumerate(self.sessions):
+        for i in self.session_ids:
             for j in self.session_games[i]:
                 game = self.all_games[j]
                 game_players = []
@@ -315,15 +320,14 @@ class Schedule:
                     game_players.append(self.choices[i][k][j])
 
                 # The minimum for a game, or 0 if not being played
-                disjoint_minimum = self.games_db.min_players(game) * self.games_played[i][j][0]
-                self.p += (
-                    pulp.lpSum(game_players) >= disjoint_minimum,
-                    f"Game min players session {i} game {j}"
-                )
+                count = self.games_db.min_players(game) * self.games_played[i][j][0]
+
+                for var in self.games_played[i][j][1:]:
+                    count += var
 
                 self.p += (
-                    pulp.lpSum(game_players) <= self.games_db.max_players(game, session),
-                    f"Game max players session {i} game {j}"
+                    pulp.lpSum(game_players) == pulp.lpSum(count),
+                    f"Game count matches players session {i} game {j}"
                 )
 
     def _add_uniqueness_constraints(self):
