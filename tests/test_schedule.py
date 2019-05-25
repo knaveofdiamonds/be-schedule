@@ -157,3 +157,20 @@ def test_multiple_copies_of_a_game(games):
     result = Schedule(games, players, [session()]).solve()
 
     assert [x for x, _ in result[0]] == ['1830', '1830']
+
+
+def test_games_only_available_if_players_are_in_session(games):
+    players = [
+        {'name': 'Alice', 'owns': ['1860'], 'interests': ['1860'], 'sessions': [0]},
+        {'name': 'Bob', 'owns': [], 'interests': ['1860']},
+        {'name': 'Charles', 'owns': [], 'interests': ['1860']},
+        {'name': 'Dick', 'owns': [], 'interests': ['1860']},
+        {'name': 'Eric', 'owns': [], 'interests': ['1860']},
+        {'name': 'Fred', 'owns': [], 'interests': ['1860']},
+        {'name': 'Georgie', 'owns': [], 'interests': ['1860']},
+    ]
+
+    result = Schedule(games, players, [session(), session()], ['1830', '1817']).solve()
+
+    assert '1860' in {x for x, _ in result[0]}
+    assert '1860' not in {x for x, _ in result[1]}

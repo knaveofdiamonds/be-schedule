@@ -98,11 +98,14 @@ class Schedule:
         self.games_db = games_db
         self.players = players
         self.sessions = sessions
+        self.shared_games = shared_games
         self.table_limit = table_limit
         self.all_games = shared_games.copy()
+        self.owned_by = [None] * len(shared_games)
 
-        for p in self.players:
-            self.all_games.extend(p['owns'])
+        for i, player in enumerate(self.players):
+            self.all_games.extend(player['owns'])
+            self.owned_by.extend([i] * len(player['owns']))
 
         self.session_ids = list(range(len(self.sessions)))
         self.session_players = self._make_session_players()
@@ -175,13 +178,23 @@ class Schedule:
         session_games = []
 
         for i, session in enumerate(self.sessions):
-            session_games.append([])
-
-            for j, game in enumerate(self.all_games):
-                if self.games_db.min_playtime(game) <= session['length']:
-                    session_games[i].append(j)
+            session_games.append([
+                    j for j, game in enumerate(self.all_games)
+                    if self._game_available(session, game, i, j)
+            ])
 
         return session_games
+
+    def _game_available(self, session, game, session_idx, game_idx):
+        """Returns true if the game is of appropriate length and exists"""
+
+        return (
+            (
+                self.owned_by[game_idx] is None or
+                self.owned_by[game_idx] in self.session_players[session_idx]
+            ) and
+            self.games_db.min_playtime(game) <= session['length']
+        )
 
     def _make_choice_variables(self):
         """Returns a nested Dict containing binary decision variables X_i_j_k.
