@@ -390,20 +390,19 @@ class Schedule:
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument('--spec', action='store_true', help='Print out the problem specification')
+    parser.add_argument('--spec', action='store_true', help='Print out the problem specification instead of solving')
+    parser.add_argument('--games', metavar='FILE', default='games.json', help='Games database json')
+    parser.add_argument('--players', metavar='FILE', default='sample.json', help='Player interests json file')
+    parser.add_argument('--sessions', metavar='FILE', default='sessions.json', help='Session info json file')
     args = parser.parse_args()
 
-    with open('sample.json') as f:
+    with open(args.players) as f:
         players = json.load(f)
 
-    games = GameDatabase.from_file('games.json')
+    with open(args.sessions) as f:
+        sessions = json.load(f)
 
-    sessions = [
-        {'name': 'Friday Eve', 'length': 300},
-        {'name': 'Saturday', 'length': 720},
-        {'name': 'Saturday Eve', 'length': 300},
-        {'name': 'Sunday', 'length': 420},
-    ]
+    games = GameDatabase.from_file(args.games)
 
     s = Schedule(games, players, sessions)
 
