@@ -77,7 +77,6 @@ def build_popularity_dict(game):
 
     for x in game.player_suggestions:
         if (
-                x.numeric_player_count >= 3 and
                 x.numeric_player_count >= game.min_players and
                 x.numeric_player_count <= game.max_players
         ):
@@ -100,6 +99,18 @@ def determine_player_count(game, popularity):
 
     min_players = game.min_players or 3
     max_players = game.max_players or 4
+
+    if min_players > max_players:
+        min_player, max_players = max_players, min_players
+
+    # hardcode the fact that almost all 18xx games need at least 3 players. The
+    # only current exception (currently) is Railroad Barons which is a 2 player
+    # game.
+    if min_players == 2 and max_players > 2:
+        min_players = 3
+
+        if 2 in popularity:
+            del popularity[2]
 
     while min_players in popularity and popularity[min_players] < 0.5 and min_players < max_players:
         del popularity[min_players]
