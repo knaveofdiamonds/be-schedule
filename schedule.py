@@ -308,8 +308,6 @@ class Schedule:
 
         self.p += pulp.lpSum(objective)
 
-        print(self.p.objective)
-
     def _add_logical_play_constraints(self):
         """Enforce logical constraints.
 
