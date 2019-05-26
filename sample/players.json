@@ -1,0 +1,668 @@
+[
+  {
+    "name": "Eustachio",
+    "owns": [],
+    "interests": [
+      "1831",
+      "Railroad Barons",
+      "1835",
+      "1846",
+      "18EU",
+      "1830",
+      "1860"
+    ],
+    "sessions": [
+      0,
+      1
+    ]
+  },
+  {
+    "name": "Gunilla",
+    "owns": [],
+    "interests": [
+      "1817",
+      "1847",
+      "1846"
+    ],
+    "sessions": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Raymond",
+    "owns": [
+      "1860"
+    ],
+    "interests": [
+      "1830",
+      "1860"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Paw",
+    "owns": [
+      "1861",
+      "18Scan",
+      "18OE"
+    ],
+    "interests": [
+      "1854",
+      "Railroad Barons",
+      "18Scan",
+      "Steam over Holland",
+      "1861",
+      "1856",
+      "1830",
+      "18Lilliput",
+      "18OE"
+    ],
+    "sessions": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Viola",
+    "owns": [
+      "1829"
+    ],
+    "interests": [
+      "1829",
+      "1860",
+      "Steam over Holland"
+    ],
+    "sessions": [
+      3
+    ]
+  },
+  {
+    "name": "Jonas",
+    "owns": [],
+    "interests": [
+      "1829",
+      "1860",
+      "18OE",
+      "1837"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Cirino",
+    "owns": [],
+    "interests": [],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Declan",
+    "owns": [],
+    "interests": [
+      "1846",
+      "1861",
+      "1856",
+      "Poseidon",
+      "18EU",
+      "1830",
+      "18SS"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Colin",
+    "owns": [
+      "1856"
+    ],
+    "interests": [
+      "1856"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Thibault",
+    "owns": [],
+    "interests": [
+      "1881",
+      "1868",
+      "1853",
+      "18CZ"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Leon",
+    "owns": [],
+    "interests": [
+      "1835",
+      "1868",
+      "18CZ",
+      "18Scan"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Marcela",
+    "owns": [
+      "1846"
+    ],
+    "interests": [
+      "1846"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Reinhold",
+    "owns": [
+      "1857"
+    ],
+    "interests": [
+      "1835",
+      "1857",
+      "1825"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Miko\u0142aj",
+    "owns": [],
+    "interests": [
+      "1841",
+      "18EU"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "R\u00e9my",
+    "owns": [
+      "1830"
+    ],
+    "interests": [
+      "1835",
+      "1846",
+      "1895",
+      "1879",
+      "1830",
+      "1853",
+      "1800"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "\u0141ukasz",
+    "owns": [],
+    "interests": [
+      "1848",
+      "1829",
+      "Steam over Holland",
+      "1856",
+      "1862",
+      "1830"
+    ],
+    "sessions": [
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Oretta",
+    "owns": [
+      "18SY",
+      "1861"
+    ],
+    "interests": [
+      "1868",
+      "1834",
+      "1861",
+      "18SY"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Demi",
+    "owns": [],
+    "interests": [],
+    "sessions": [
+      0,
+      1,
+      2
+    ]
+  },
+  {
+    "name": "Luis Miguel",
+    "owns": [
+      "1856",
+      "1870",
+      "1830",
+      "1846"
+    ],
+    "interests": [
+      "1822",
+      "1848",
+      "1870",
+      "1846",
+      "1856",
+      "1830",
+      "1860"
+    ],
+    "sessions": [
+      2
+    ]
+  },
+  {
+    "name": "Leigh",
+    "owns": [],
+    "interests": [
+      "1846",
+      "1868",
+      "1856",
+      "18EU",
+      "18Lilliput",
+      "18HeXX"
+    ],
+    "sessions": [
+      0,
+      1
+    ]
+  },
+  {
+    "name": "Martyn",
+    "owns": [
+      "Railroad Barons",
+      "18AL",
+      "18Lilliput"
+    ],
+    "interests": [
+      "18Lilliput",
+      "Railroad Barons",
+      "18AL"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "M\u00f3nica",
+    "owns": [
+      "1835",
+      "18Lilliput",
+      "1870",
+      "1846",
+      "1830"
+    ],
+    "interests": [
+      "1870",
+      "1829",
+      "1846",
+      "1860",
+      "1861",
+      "1856",
+      "1835",
+      "1830",
+      "18Lilliput"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Cyprian",
+    "owns": [
+      "1856",
+      "1826",
+      "18NL",
+      "1829"
+    ],
+    "interests": [
+      "18NL",
+      "1829",
+      "1889",
+      "1856",
+      "1826"
+    ],
+    "sessions": [
+      1,
+      2
+    ]
+  },
+  {
+    "name": "James",
+    "owns": [],
+    "interests": [
+      "1854",
+      "18OE"
+    ],
+    "sessions": [
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Sofia",
+    "owns": [
+      "1843"
+    ],
+    "interests": [
+      "1856",
+      "1843"
+    ],
+    "sessions": [
+      2
+    ]
+  },
+  {
+    "name": "Aim\u00e9",
+    "owns": [],
+    "interests": [
+      "18MEX",
+      "1860",
+      "Ur: 1830 BC"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Lauren",
+    "owns": [
+      "1880",
+      "1893"
+    ],
+    "interests": [
+      "Steam over Holland",
+      "1880",
+      "1846",
+      "1893",
+      "1856",
+      "18AL",
+      "Harzbahn 1873",
+      "18GA",
+      "1869"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Francesca",
+    "owns": [],
+    "interests": [
+      "18Lilliput",
+      "1870",
+      "1846"
+    ],
+    "sessions": [
+      3
+    ]
+  },
+  {
+    "name": "Kai",
+    "owns": [],
+    "interests": [
+      "1817",
+      "1830",
+      "1846",
+      "Steam over Holland"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Liwia",
+    "owns": [],
+    "interests": [
+      "18EU"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Loredana",
+    "owns": [
+      "1870",
+      "2038: Tycoons of the Asteroid Belt",
+      "1846",
+      "Railroad Barons"
+    ],
+    "interests": [
+      "1870",
+      "Railroad Barons",
+      "1846",
+      "2038: Tycoons of the Asteroid Belt"
+    ],
+    "sessions": [
+      3
+    ]
+  },
+  {
+    "name": "Elisabet",
+    "owns": [],
+    "interests": [
+      "1829",
+      "2038: Tycoons of the Asteroid Belt",
+      "1849",
+      "Poseidon",
+      "1891",
+      "1830",
+      "18Lilliput"
+    ],
+    "sessions": [
+      2
+    ]
+  },
+  {
+    "name": "Preben",
+    "owns": [],
+    "interests": [
+      "18NL",
+      "Railroad Barons",
+      "1856",
+      "1847",
+      "18CZ",
+      "18Lilliput",
+      "18FR"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Aim\u00e9e",
+    "owns": [],
+    "interests": [
+      "18NEB",
+      "1846",
+      "18West",
+      "1861",
+      "1856",
+      "1826",
+      "1830"
+    ],
+    "sessions": [
+      1
+    ]
+  },
+  {
+    "name": "Christian",
+    "owns": [
+      "18PA"
+    ],
+    "interests": [
+      "18PA",
+      "1830",
+      "1889"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Ivo",
+    "owns": [],
+    "interests": [
+      "2038: Tycoons of the Asteroid Belt",
+      "Poseidon",
+      "18AL",
+      "1862",
+      "1830",
+      "1825"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Edvige",
+    "owns": [],
+    "interests": [
+      "18NL",
+      "1870",
+      "1856",
+      "Poseidon",
+      "18CZ"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Rune",
+    "owns": [],
+    "interests": [
+      "1835",
+      "1876",
+      "18CZ"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Lindsey",
+    "owns": [],
+    "interests": [
+      "Poseidon",
+      "18GA"
+    ],
+    "sessions": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  {
+    "name": "Lara",
+    "owns": [
+      "18OE",
+      "1835"
+    ],
+    "interests": [
+      "18OE",
+      "Poseidon",
+      "1835",
+      "1830",
+      "Ur: 1830 BC"
+    ],
+    "sessions": [
+      3
+    ]
+  }
+]
