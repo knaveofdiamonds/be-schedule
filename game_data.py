@@ -98,8 +98,8 @@ def determine_player_count(game, popularity):
     Ignore player counts where the votes on BGG give more than 50% not recommended
     """
 
-    min_players = max(game.min_players, 3)
-    max_players = game.max_players
+    min_players = game.min_players or 3
+    max_players = game.max_players or 4
 
     while min_players in popularity and popularity[min_players] < 0.5 and min_players < max_players:
         del popularity[min_players]
