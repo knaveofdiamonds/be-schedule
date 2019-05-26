@@ -454,11 +454,16 @@ if __name__ == '__main__':
             print(f"## {game} ##")
 
             for player in players:
+                extra = ''
+
                 if game in player['interests']:
-                    print(f"{player['name']}*")
                     satisfied_interests += 1
-                else:
-                    print(f"{player['name']}")
+                    extra = '*'
+
+                    if game in player['owns']:
+                        extra = '**'
+
+                print(f"{player['name']}{extra}")
 
             print("")
 
