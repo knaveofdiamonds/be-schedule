@@ -394,6 +394,8 @@ if __name__ == '__main__':
     parser.add_argument('--games', metavar='FILE', default='games.json', help='Games database json')
     parser.add_argument('--players', metavar='FILE', default='sample.json', help='Player interests json file')
     parser.add_argument('--sessions', metavar='FILE', default='sessions.json', help='Session info json file')
+    parser.add_argument('--table-limit', metavar='N', default=10, type=int, help='Session info json file')
+    parser.add_argument('--shared-games', nargs='*', metavar='GAMES', default=[], help='Session info json file')
     args = parser.parse_args()
 
     with open(args.players) as f:
@@ -404,7 +406,13 @@ if __name__ == '__main__':
 
     games = GameDatabase.from_file(args.games)
 
-    s = Schedule(games, players, sessions)
+    s = Schedule(
+        games,
+        players,
+        sessions,
+        shared_games=args.shared_games,
+        table_limit=args.table_limit,
+    )
 
     if args.spec:
         print(s.p)
