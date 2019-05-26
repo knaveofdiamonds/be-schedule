@@ -246,18 +246,22 @@ class Schedule:
         return result
 
     def _make_games_played_variables(self):
-        """Returns a nested Dict containing binary decision variables G_i_j.
+        """Returns a nested Dict containing binary decision variables G_i_j_c.
 
-        These represent: for each session i, for each game j: `1` if this game
-        is part of this session, `0` otherwise.
+        These represent: for each session i, for each game j, for each player
+        count c-min_player_count: `1` if this game is being played at this
+        player count _or higher_ in this session, 0 otherwise.
 
-        These are necessary (and cannot just be inferred from the choice
-        decision variables) in order to support the disjoint constraints on the
-        minimum number of players in a game - i.e. any particular game needs >=
-        n players, but _only_ if the game is being played at all (if it isn't
-        being played, 0 players is valid)!
+        These are necessary to support:
 
-        They also support the table limit constraints
+        * the disjoint constraints on the minimum number of players in a game
+          (i.e. any particular game needs >= n players, but _only_ if the game
+          is being played at all) and to
+
+        * the table limit constraints
+
+        * including the value of different player counts in the objective
+          function.
 
         """
         result = {}
