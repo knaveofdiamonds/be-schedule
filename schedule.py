@@ -1,9 +1,22 @@
 from argparse import ArgumentParser
+from itertools import islice
 import json
 import math
 import sys
 
 import pulp
+
+
+def window(seq, n=2):
+    "Returns a sliding window (of width n) over data from the iterable"
+    "   s -> (s0,s1,...s[n-1]), (s1,s2,...,sn), ...                   "
+    it = iter(seq)
+    result = tuple(islice(it, n))
+    if len(result) == n:
+        yield result
+    for elem in it:
+        result = result[1:] + (elem,)
+        yield result
 
 
 class GameDatabase:
@@ -14,10 +27,10 @@ class GameDatabase:
             'max_players': 4,
             'min_playtime': 240,
             'max_playtime': 240,
-            'popularity': {
-                3: 0.9,
-                4: 0.9,
-            }
+            'adjusted_popularity': [
+                0.09 * 3,
+                0.09,
+            ]
         }
 
         self._preprocess_game_popularities()
@@ -64,11 +77,8 @@ class GameDatabase:
 
         return max(g['max_playtime'], g['min_playtime'])
 
-    def popularity(self, game, n):
-        try:
-            return self._game[game][n]
-        except KeyError:
-            return 1.0
+    def adjusted_popularity(self, game, n):
+        return self._game(game)['adjusted_popularity'][n]
 
     def _game(self, game):
         if game in self.games:
@@ -80,7 +90,7 @@ class GameDatabase:
         for g in self.games:
             game = self.games[g]
 
-            popularity = {}
+            popularity = []
 
             for i in range(game['min_players'], game['max_players'] + 1):
                 if 'popularity' in game and str(i) in game['popularity']:
@@ -89,10 +99,23 @@ class GameDatabase:
                     value = 0.9
 
                 # Smooth popularity such that games with lots of popularity
-                # ratings don't effect the objective function
-                popularity[i] = min(value, 0.9)
+                # ratings don't effect the objective function. Also multiply
+                # them by the player count, and multiply them by 0.1 so they do
+                # not dominate interests.
+                popularity.append((i, min(value, 0.9) * 0.1 * i))
 
-            game['popularity'] = popularity
+            popularity = [x for _, x in sorted(popularity, key=lambda x: x[0])]
+
+            try:
+                result = [popularity[0]]
+            except IndexError as e:
+                print(game)
+                raise e
+
+            for a, b in window(popularity, 2):
+                result.append(b - a)
+
+            game['adjusted_popularity'] = result
 
 
 class Schedule:
@@ -267,15 +290,25 @@ class Schedule:
         objective = []
 
         for i in self.session_ids:
-            for j in self.session_players[i]:
+            for p in self.session_players[i]:
                 for k in self.session_games[i]:
                     game = self.all_games[k]
 
                     objective.append(
-                        self.choices[i][j][k] * self.weight(self.players[j], game)
+                        self.choices[i][p][k] * self.weight(self.players[p], game)
+                    )
+
+            for g in self.games_played[i]:
+                game = self.all_games[g]
+
+                for count_idx, count_var in enumerate(self.games_played[i][g]):
+                    objective.append(
+                        self.games_db.adjusted_popularity(game, count_idx) * count_var
                     )
 
         self.p += pulp.lpSum(objective)
+
+        print(self.p.objective)
 
     def _add_logical_play_constraints(self):
         """Enforce logical constraints.

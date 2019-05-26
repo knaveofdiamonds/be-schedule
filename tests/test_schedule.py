@@ -12,6 +12,12 @@ def games():
             'max_players': 6,
             'min_playtime': 360,
             'max_playtime': 540,
+            'popularity': {
+                '3': 0.5,
+                '4': 1.0,
+                '5': 1.0,
+                '6': 1.0,
+            }
         },
         '1830': {
             'name': '1830',
@@ -19,6 +25,12 @@ def games():
             'max_players': 6,
             'min_playtime': 180,
             'max_playtime': 360,
+            'popularity': {
+                '3': 1.0,
+                '4': 1.0,
+                '5': 1.0,
+                '6': 1.0,
+            }
         },
         '1860': {
             'name': '1860',
@@ -26,6 +38,10 @@ def games():
             'max_players': 4,
             'min_playtime': 240,
             'max_playtime': 240,
+            'popularity': {
+                '3': 1.0,
+                '4': 0.5,
+            }
         },
     })
 
@@ -174,3 +190,19 @@ def test_games_only_available_if_players_are_in_session(games):
 
     assert '1860' in {x for x, _ in result[0]}
     assert '1860' not in {x for x, _ in result[1]}
+
+
+def test_player_count_popularity_figures_in_objective_function(games):
+    players = [
+        {'name': 'Alice', 'owns': ['1817'], 'interests': ['1817']},
+        {'name': 'Bob', 'owns': [], 'interests': ['1817', '1830']},
+        {'name': 'Charles', 'owns': ['1830'], 'interests': ['1817', '1830']},
+        {'name': 'Dick', 'owns': [], 'interests': ['1817', '1830']},
+        {'name': 'Eric', 'owns': [], 'interests': ['1817', '1830']},
+        {'name': 'Fred', 'owns': [], 'interests': ['1817', '1830']},
+    ]
+
+    result = Schedule(games, players, [session()]).solve()
+    by_game = {g: p for g, p in result[0]}
+
+    assert len(by_game['1817']) == 6
