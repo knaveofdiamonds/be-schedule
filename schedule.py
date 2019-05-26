@@ -382,8 +382,26 @@ class Schedule:
                     self.p += pulp.lpSum(variables) <= 1, f"Play once player {i} game {game}"
 
     def weight(self, player, game):
+        """Returns how interested a player is in a game.
+
+        The assumptions are:
+
+        * Players are uniformally interested in games that they have not
+          specified
+
+        * All players interests are equal - there is no weighting for someone
+          who has expressed few interests vs. many.
+
+        * A player who brings games is more interested in playing those than
+          other games, and further, this player is given priority to playing
+          that game over others.
+
+        """
         if game in player['interests']:
-            return 1.0
+            if game in player['owns']:
+                return 1.05
+            else:
+                return 1.0
         else:
             return 0.0
 
